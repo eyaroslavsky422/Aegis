@@ -1,4 +1,4 @@
-# Aegis — Adaptive Emergency Triage and Dispatch Interface
+# Aegis: Adaptive Emergency Triage and Dispatch Interface
 
 Aegis is a cognitive decision-support cockpit that analyzes emergency call transcripts, monitors patient vitals in real time, and recommends optimal responder deployment while providing pre-arrival preparation guidance to emergency responders.
 
