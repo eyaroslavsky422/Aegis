@@ -9,6 +9,9 @@ import { cn } from "@/lib/utils";
 
 export default function FleetOverview() {
   const hospitalPos = PATIENTS[0].hospitalPos;
+  
+  // Sort patients by severity (number of critical params)
+  const sortedPatients = [...PATIENTS].sort((a, b) => b.criticalParams.length - a.criticalParams.length);
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -33,9 +36,9 @@ export default function FleetOverview() {
           {/* Patient List */}
           <div className="space-y-4">
             <h2 className="text-sm font-semibold uppercase tracking-widest text-slate-400 mb-3">
-              Active Patients
+              Active Patients <span className="text-xs font-normal text-slate-500">(Sorted by Severity)</span>
             </h2>
-            {PATIENTS.map((patient, idx) => (
+            {sortedPatients.map((patient, idx) => (
               <motion.div
                 key={patient.id}
                 initial={{ opacity: 0, y: 20 }}
