@@ -6,7 +6,9 @@ import SepsisMetricsPanel from "../components/sepsis/SepsisMetricsPanel";
 import ResuscitationPanel from "../components/sepsis/ResuscitationPanel";
 import AmbulanceMap from "../components/map/AmbulanceMap";
 import { PATIENTS } from "../components/map/patientData";
-import { Siren, Clock, MapPin, Activity } from "lucide-react";
+import { Siren, Clock, MapPin, Activity, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 
 function LiveClock() {
   const [time, setTime] = useState(new Date());
@@ -38,6 +40,12 @@ export default function SepsisCockpit() {
       <header className="sticky top-0 z-30 backdrop-blur-xl bg-slate-950/80 border-b border-slate-800/60">
         <div className="max-w-screen-2xl mx-auto px-4 py-2.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
+            <Link 
+              to={createPageUrl("FleetOverview")} 
+              className="text-slate-400 hover:text-slate-200 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
             <div className="flex items-center gap-2">
               <Siren className="w-5 h-5 text-red-400" />
               <h1 className="text-sm font-bold tracking-wide">
