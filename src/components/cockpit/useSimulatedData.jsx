@@ -35,6 +35,21 @@ export default function useSimulatedData() {
     ieRatio: "1:2.0", leakStatus: "None", disconnection: false,
   });
 
+  const resetToNormal = (params) => {
+    setData(prev => {
+      const updated = { ...prev };
+      params.forEach(param => {
+        const r = NORMAL_RANGES[param];
+        if (r) {
+          updated[param] = Math.round((r.min + r.max) / 2);
+        }
+        if (param === "disconnection") updated.disconnection = false;
+        if (param === "leakStatus") updated.leakStatus = "None";
+      });
+      return updated;
+    });
+  };
+
   const waveformRef = useRef([]);
   const [waveform, setWaveform] = useState([]);
   const phaseRef = useRef(0);
@@ -91,5 +106,5 @@ export default function useSimulatedData() {
   if (data.disconnection) statuses.disconnection = "critical";
   if (data.leakStatus !== "None") statuses.leakStatus = "warning";
 
-  return { data, statuses, waveform, ranges: NORMAL_RANGES };
+  return { data, statuses, waveform, ranges: NORMAL_RANGES, resetToNormal };
 }

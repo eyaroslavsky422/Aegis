@@ -22,7 +22,7 @@ function LiveClock() {
 }
 
 export default function RespiratoryCockpit() {
-  const { data, statuses, waveform } = useSimulatedData();
+  const { data, statuses, waveform, resetToNormal } = useSimulatedData();
   const [novice, setNovice] = useState(true);
   const [resolvedPanel, setResolvedPanel] = useState(null);
 
@@ -46,6 +46,7 @@ export default function RespiratoryCockpit() {
     [];
 
   const handleResolve = () => {
+    resetToNormal(criticalParams);
     setResolvedPanel(criticalPanel);
     setTimeout(() => setResolvedPanel(null), 500);
   };
