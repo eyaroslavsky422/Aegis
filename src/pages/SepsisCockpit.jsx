@@ -25,14 +25,21 @@ function LiveClock() {
 }
 
 export default function SepsisCockpit() {
-  const { data, statuses } = useSepsisData();
+  const { data, statuses, primaryThreat } = useSepsisData();
   const [selectedParameter, setSelectedParameter] = useState(null);
   
   const urlParams = new URLSearchParams(window.location.search);
   const patientId = urlParams.get('patient') || 'AMB-2401';
   const patient = PATIENTS.find(p => p.id === patientId) || PATIENTS[0];
 
-  const hasCritical = Object.values(statuses).some(s => s === "critical");
+  const hasCritical = Object.values(statuses).some(s => s === "critical") || primaryThreat;
+
+  // Auto-expand Primary Threat
+  useEffect(() => {
+    if (primaryThreat) {
+      setSelectedParameter(primaryThreat);
+    }
+  }, [primaryThreat]);
 
   return (
     <div className={`min-h-screen bg-slate-950 text-white transition-colors duration-700 ${
@@ -77,12 +84,19 @@ export default function SepsisCockpit() {
 
       {/* Main Grid */}
       <main className="max-w-screen-2xl mx-auto p-4">
+        {/* Legend */}
+        <div className="mb-4 px-4 py-2 bg-slate-800/40 rounded-xl border border-slate-700/30">
+          <p className="text-xs text-slate-400">
+            <span className="font-semibold text-amber-300">Amber</span> = warning • <span className="font-semibold text-red-300">Red</span> = critical • <span className="font-semibold text-purple-300">Purple</span> = immediate intervention (auto-expanded)
+          </p>
+        </div>
         <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
           {/* LEFT — Vital Signs */}
           <section>
             <SepsisVitalsPanel 
               data={data} 
-              statuses={statuses} 
+              statuses={statuses}
+              primaryThreat={primaryThreat}
               onCriticalClick={setSelectedParameter}
             />
           </section>
@@ -91,7 +105,8 @@ export default function SepsisCockpit() {
           <section>
             <SepsisMetricsPanel 
               data={data} 
-              statuses={statuses} 
+              statuses={statuses}
+              primaryThreat={primaryThreat}
               onCriticalClick={setSelectedParameter}
             />
           </section>
