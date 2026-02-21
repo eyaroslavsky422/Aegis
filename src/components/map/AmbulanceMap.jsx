@@ -38,20 +38,26 @@ const hospitalIcon = L.divIcon({
   iconAnchor: [14, 14],
 });
 
-export default function AmbulanceMap({ ambulancePos, hospitalPos, patientId, eta, compact = false, expandable = true }) {
+export default function AmbulanceMap({ ambulancePos, hospitalPos, patientId, eta, compact = false, expandable = true, allPatients = null }) {
   const [expanded, setExpanded] = useState(false);
   const [mapKey, setMapKey] = useState(0);
 
-  const center = [
-    (ambulancePos[0] + hospitalPos[0]) / 2,
-    (ambulancePos[1] + hospitalPos[1]) / 2,
-  ];
+  // If showing all patients, calculate center from all positions
+  const center = allPatients 
+    ? [
+        allPatients.reduce((sum, p) => sum + p.ambulancePos[0], 0) / allPatients.length,
+        allPatients.reduce((sum, p) => sum + p.ambulancePos[1], 0) / allPatients.length,
+      ]
+    : [
+        (ambulancePos[0] + hospitalPos[0]) / 2,
+        (ambulancePos[1] + hospitalPos[1]) / 2,
+      ];
 
   const MapContent = ({ isExpanded = false }) => (
     <MapContainer
       key={`map-${mapKey}-${isExpanded ? 'expanded' : 'compact'}`}
       center={center}
-      zoom={12}
+      zoom={allPatients ? 13 : 12}
       className="w-full h-full rounded-xl"
       zoomControl={!compact || isExpanded}
       scrollWheelZoom={false}
@@ -61,28 +67,64 @@ export default function AmbulanceMap({ ambulancePos, hospitalPos, patientId, eta
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; OpenStreetMap'
       />
-      <Marker position={ambulancePos} icon={ambulanceIcon}>
-        <Popup>
-          <div className="text-xs">
-            <p className="font-bold">Patient: {patientId}</p>
-            <p>ETA: {eta} min</p>
-          </div>
-        </Popup>
-      </Marker>
-      <Marker position={hospitalPos} icon={hospitalIcon}>
-        <Popup>
-          <div className="text-xs font-bold">
-            Receiving Hospital
-          </div>
-        </Popup>
-      </Marker>
-      <Polyline
-        positions={[ambulancePos, hospitalPos]}
-        color="#3b82f6"
-        weight={3}
-        dashArray="10, 10"
-        opacity={0.6}
-      />
+      
+      {/* Show all patients or single patient */}
+      {allPatients ? (
+        <>
+          {allPatients.map((patient) => (
+            <React.Fragment key={patient.id}>
+              <Marker position={patient.ambulancePos} icon={ambulanceIcon}>
+                <Popup>
+                  <div className="text-xs">
+                    <p className="font-bold">{patient.name}</p>
+                    <p className="text-slate-600">{patient.id}</p>
+                    <p className="mt-1">ETA: {patient.eta} min</p>
+                  </div>
+                </Popup>
+              </Marker>
+              <Polyline
+                positions={[patient.ambulancePos, patient.hospitalPos]}
+                color={patient.criticalParams.length > 0 ? "#ef4444" : "#3b82f6"}
+                weight={2}
+                dashArray="10, 10"
+                opacity={0.5}
+              />
+            </React.Fragment>
+          ))}
+          <Marker position={hospitalPos} icon={hospitalIcon}>
+            <Popup>
+              <div className="text-xs font-bold">
+                Receiving Hospital
+              </div>
+            </Popup>
+          </Marker>
+        </>
+      ) : (
+        <>
+          <Marker position={ambulancePos} icon={ambulanceIcon}>
+            <Popup>
+              <div className="text-xs">
+                <p className="font-bold">Patient: {patientId}</p>
+                <p>ETA: {eta} min</p>
+              </div>
+            </Popup>
+          </Marker>
+          <Marker position={hospitalPos} icon={hospitalIcon}>
+            <Popup>
+              <div className="text-xs font-bold">
+                Receiving Hospital
+              </div>
+            </Popup>
+          </Marker>
+          <Polyline
+            positions={[ambulancePos, hospitalPos]}
+            color="#3b82f6"
+            weight={3}
+            dashArray="10, 10"
+            opacity={0.6}
+          />
+        </>
+      )}
     </MapContainer>
   );
 

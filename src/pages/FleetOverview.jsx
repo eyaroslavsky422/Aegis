@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { PATIENTS } from "../components/map/patientData";
@@ -8,12 +8,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export default function FleetOverview() {
-  const [selectedPatient, setSelectedPatient] = useState(null);
-
-  // Combined map showing all ambulances
-  const allAmbulances = PATIENTS.map(p => p.ambulancePos);
   const hospitalPos = PATIENTS[0].hospitalPos;
-  const mapCenter = [37.7849, -122.4194];
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -107,10 +102,9 @@ export default function FleetOverview() {
             <div className="rounded-2xl border border-slate-700/50 bg-slate-800/60 p-3 overflow-hidden">
               <div className="h-[600px]">
                 <AmbulanceMap
-                  ambulancePos={selectedPatient ? PATIENTS.find(p => p.id === selectedPatient)?.ambulancePos || mapCenter : mapCenter}
+                  allPatients={PATIENTS}
                   hospitalPos={hospitalPos}
-                  patientId={selectedPatient || "All Units"}
-                  eta={selectedPatient ? PATIENTS.find(p => p.id === selectedPatient)?.eta : "—"}
+                  patientId="All Units"
                   compact={false}
                   expandable={false}
                 />
