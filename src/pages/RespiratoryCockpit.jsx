@@ -6,7 +6,9 @@ import OxygenationPanel from "../components/cockpit/OxygenationPanel";
 import VentStatusPanel from "../components/cockpit/VentStatusPanel";
 import ModeToggle from "../components/cockpit/ModeToggle";
 import ActionMenu from "../components/cockpit/ActionMenu";
-import { Siren, Clock } from "lucide-react";
+import AmbulanceMap from "../components/map/AmbulanceMap";
+import { PATIENTS } from "../components/map/patientData";
+import { Siren, Clock, MapPin } from "lucide-react";
 
 function LiveClock() {
   const [time, setTime] = useState(new Date());
@@ -25,6 +27,11 @@ export default function RespiratoryCockpit() {
   const { data, statuses, waveform, resetToNormal } = useSimulatedData();
   const [novice, setNovice] = useState(true);
   const [resolvedPanel, setResolvedPanel] = useState(null);
+  
+  // Get patient ID from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const patientId = urlParams.get('patient') || 'AMB-2401';
+  const patient = PATIENTS.find(p => p.id === patientId) || PATIENTS[0];
 
   const hasCritical = Object.values(statuses).some(s => s === "critical") || data.disconnection;
 
@@ -71,6 +78,11 @@ export default function RespiratoryCockpit() {
               <h1 className="text-sm font-bold tracking-wide">
                 RESPIRATORY <span className="text-sky-400">COCKPIT</span>
               </h1>
+            </div>
+            <div className="hidden sm:block h-4 w-px bg-slate-700" />
+            <div className="hidden sm:block text-xs">
+              <p className="font-semibold text-slate-200">{patient.name}</p>
+              <p className="text-slate-500">{patient.id}</p>
             </div>
             <div className="hidden sm:flex items-center gap-1.5 ml-4 px-2.5 py-1 rounded-full bg-slate-800/60 border border-slate-700/40">
               <div className={`w-1.5 h-1.5 rounded-full ${hasCritical ? "bg-red-400 animate-pulse" : "bg-emerald-400 animate-pulse"}`} />
@@ -152,6 +164,23 @@ export default function RespiratoryCockpit() {
           </motion.div>
         </AnimatePresence>
       </main>
+
+      {/* Map Section */}
+      <section className="max-w-screen-2xl mx-auto px-4 pb-4">
+        <div className="flex items-center gap-2 mb-3">
+          <MapPin className="w-4 h-4 text-emerald-400" />
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+            Location & Transport
+          </h2>
+        </div>
+        <AmbulanceMap
+          ambulancePos={patient.ambulancePos}
+          hospitalPos={patient.hospitalPos}
+          patientId={patient.id}
+          eta={patient.eta}
+          compact={true}
+        />
+      </section>
 
       {/* Bottom safety bar */}
       {hasCritical && (

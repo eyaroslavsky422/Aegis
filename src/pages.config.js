@@ -48,10 +48,12 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import RespiratoryCockpit from './pages/RespiratoryCockpit';
+import FleetOverview from './pages/FleetOverview';
 
 
 export const PAGES = {
     "RespiratoryCockpit": RespiratoryCockpit,
+    "FleetOverview": FleetOverview,
 }
 
 export const pagesConfig = {
