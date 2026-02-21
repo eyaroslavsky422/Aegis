@@ -40,18 +40,22 @@ const hospitalIcon = L.divIcon({
 
 export default function AmbulanceMap({ ambulancePos, hospitalPos, patientId, eta, compact = false, expandable = true }) {
   const [expanded, setExpanded] = useState(false);
+  const [mapKey, setMapKey] = useState(0);
 
   const center = [
     (ambulancePos[0] + hospitalPos[0]) / 2,
     (ambulancePos[1] + hospitalPos[1]) / 2,
   ];
 
-  const MapContent = () => (
+  const MapContent = ({ isExpanded = false }) => (
     <MapContainer
+      key={`map-${mapKey}-${isExpanded ? 'expanded' : 'compact'}`}
       center={center}
       zoom={12}
       className="w-full h-full rounded-xl"
-      zoomControl={!compact || expanded}
+      zoomControl={!compact || isExpanded}
+      scrollWheelZoom={false}
+      style={{ height: '100%', width: '100%' }}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -84,8 +88,8 @@ export default function AmbulanceMap({ ambulancePos, hospitalPos, patientId, eta
 
   if (!expandable) {
     return (
-      <div className={compact ? "h-48" : "h-96"}>
-        <MapContent />
+      <div className={compact ? "h-48" : "h-96"} style={{ position: 'relative' }}>
+        <MapContent isExpanded={false} />
       </div>
     );
   }
@@ -93,13 +97,16 @@ export default function AmbulanceMap({ ambulancePos, hospitalPos, patientId, eta
   return (
     <>
       <div className="relative">
-        <div className={compact ? "h-48" : "h-64"}>
-          <MapContent />
+        <div className={compact ? "h-48" : "h-64"} style={{ position: 'relative' }}>
+          <MapContent isExpanded={false} />
         </div>
         <Button
-          onClick={() => setExpanded(true)}
+          onClick={() => {
+            setExpanded(true);
+            setMapKey(prev => prev + 1);
+          }}
           size="sm"
-          className="absolute top-2 right-2 bg-slate-900/80 hover:bg-slate-800 text-white gap-1.5 backdrop-blur-sm"
+          className="absolute top-2 right-2 bg-slate-900/80 hover:bg-slate-800 text-white gap-1.5 backdrop-blur-sm z-[1000]"
         >
           <Maximize2 className="w-3.5 h-3.5" />
           Expand
@@ -139,7 +146,7 @@ export default function AmbulanceMap({ ambulancePos, hospitalPos, patientId, eta
                 <Minimize2 className="w-3.5 h-3.5" />
                 Close
               </Button>
-              <MapContent />
+              <MapContent isExpanded={true} />
             </motion.div>
           </motion.div>
         )}
