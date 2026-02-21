@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import useSepsisData from "../components/sepsis/useSepsisData";
 import SepsisVitalsPanel from "../components/sepsis/SepsisVitalsPanel";
 import SepsisMetricsPanel from "../components/sepsis/SepsisMetricsPanel";
 import ResuscitationPanel from "../components/sepsis/ResuscitationPanel";
+import SepsisActionMenu from "../components/sepsis/SepsisActionMenu";
 import AmbulanceMap from "../components/map/AmbulanceMap";
 import { PATIENTS } from "../components/map/patientData";
 import { Siren, Clock, MapPin, Activity, ArrowLeft } from "lucide-react";
@@ -25,6 +26,7 @@ function LiveClock() {
 
 export default function SepsisCockpit() {
   const { data, statuses } = useSepsisData();
+  const [selectedParameter, setSelectedParameter] = useState(null);
   
   const urlParams = new URLSearchParams(window.location.search);
   const patientId = urlParams.get('patient') || 'AMB-2401';
@@ -78,12 +80,20 @@ export default function SepsisCockpit() {
         <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
           {/* LEFT — Vital Signs */}
           <section>
-            <SepsisVitalsPanel data={data} statuses={statuses} />
+            <SepsisVitalsPanel 
+              data={data} 
+              statuses={statuses} 
+              onCriticalClick={setSelectedParameter}
+            />
           </section>
 
           {/* CENTER — Sepsis Metrics */}
           <section>
-            <SepsisMetricsPanel data={data} statuses={statuses} />
+            <SepsisMetricsPanel 
+              data={data} 
+              statuses={statuses} 
+              onCriticalClick={setSelectedParameter}
+            />
           </section>
 
           {/* RIGHT — Resuscitation */}
@@ -93,6 +103,15 @@ export default function SepsisCockpit() {
         </div>
       </main>
 
+      {/* Action Menu Modal */}
+      <AnimatePresence>
+        {selectedParameter && (
+          <SepsisActionMenu 
+            parameter={selectedParameter} 
+            onClose={() => setSelectedParameter(null)} 
+          />
+        )}
+      </AnimatePresence>
       {/* Map Section */}
       <section className="max-w-screen-2xl mx-auto px-4 pb-4">
         <div className="flex items-center justify-between mb-3">
