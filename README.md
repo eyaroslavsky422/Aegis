@@ -132,7 +132,7 @@ Interactive Map Visualization and Incident Monitoring
 
 ### Backend Integration (Extensible)
 
-* Claude API integration for transcript analysis (planned / extensible)
+* OpenAI API integration for transcript analysis (planned / extensible)
 * Dispatch and responder assignment logic (planned / extensible)
 
 ### Data
@@ -277,7 +277,7 @@ All outputs should be treated as decision-support suggestions requiring human ve
 
 ## Future Work
 
-* Real-time transcript ingestion and analysis via Claude API
+* Real-time transcript ingestion and analysis via OpenAI API and Wispr Flow
 * Live responder GPS tracking integration
 * Automated responder assignment engine
 * Hospital routing and availability optimization
