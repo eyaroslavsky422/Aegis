@@ -17,7 +17,7 @@ export default function FleetOverview() {
           <div className="flex items-center gap-3">
             <Ambulance className="w-6 h-6 text-red-400" />
             <h1 className="text-lg font-bold tracking-wide">
-              FLEET <span className="text-sky-400">OVERVIEW</span>
+              <span className="text-sky-400">AEGIS</span> <span className="text-slate-400">FLEET</span>
             </h1>
             <div className="ml-4 px-3 py-1 rounded-full bg-slate-800/60 border border-slate-700/40">
               <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">

@@ -76,7 +76,7 @@ export default function RespiratoryCockpit() {
             <div className="flex items-center gap-2">
               <Siren className="w-5 h-5 text-red-400" />
               <h1 className="text-sm font-bold tracking-wide">
-                RESPIRATORY <span className="text-sky-400">COCKPIT</span>
+                <span className="text-sky-400">AEGIS</span>
               </h1>
             </div>
             <div className="hidden sm:block h-4 w-px bg-slate-700" />
