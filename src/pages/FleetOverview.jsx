@@ -46,7 +46,7 @@ export default function FleetOverview() {
                 transition={{ delay: idx * 0.1 }}
               >
                 <Link
-                  to={`${createPageUrl("RespiratoryCockpit")}?patient=${patient.id}`}
+                  to={`${createPageUrl(patient.condition === "Sepsis" ? "SepsisCockpit" : "RespiratoryCockpit")}?patient=${patient.id}`}
                   className="block"
                 >
                   <div className={cn(

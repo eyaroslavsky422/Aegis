@@ -47,13 +47,15 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
-import RespiratoryCockpit from './pages/RespiratoryCockpit';
 import FleetOverview from './pages/FleetOverview';
+import RespiratoryCockpit from './pages/RespiratoryCockpit';
+import SepsisCockpit from './pages/SepsisCockpit';
 
 
 export const PAGES = {
-    "RespiratoryCockpit": RespiratoryCockpit,
     "FleetOverview": FleetOverview,
+    "RespiratoryCockpit": RespiratoryCockpit,
+    "SepsisCockpit": SepsisCockpit,
 }
 
 export const pagesConfig = {
