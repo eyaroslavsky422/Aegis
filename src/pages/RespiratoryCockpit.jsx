@@ -5,6 +5,7 @@ import CirculationPanel from "../components/cockpit/CirculationPanel";
 import OxygenationPanel from "../components/cockpit/OxygenationPanel";
 import VentStatusPanel from "../components/cockpit/VentStatusPanel";
 import ModeToggle from "../components/cockpit/ModeToggle";
+import ActionMenu from "../components/cockpit/ActionMenu";
 import { Siren, Clock } from "lucide-react";
 
 function LiveClock() {
@@ -23,8 +24,38 @@ function LiveClock() {
 export default function RespiratoryCockpit() {
   const { data, statuses, waveform } = useSimulatedData();
   const [novice, setNovice] = useState(true);
+  const [resolvedPanel, setResolvedPanel] = useState(null);
 
   const hasCritical = Object.values(statuses).some(s => s === "critical") || data.disconnection;
+
+  // Determine which panel has critical values
+  const circulationCritical = ["hr", "sbp", "dbp", "map"].filter(k => statuses[k] === "critical");
+  const oxygenationCritical = ["spo2", "rr", "etco2", "fio2", "tv", "mv"].filter(k => statuses[k] === "critical");
+  const ventStatusCritical = data.disconnection || data.leakStatus !== "None" || 
+    ["pip", "peep", "pplat"].filter(k => statuses[k] === "critical").length > 0;
+
+  const criticalPanel = resolvedPanel ? null :
+    circulationCritical.length > 0 ? "circulation" :
+    oxygenationCritical.length > 0 ? "oxygenation" :
+    ventStatusCritical ? "ventStatus" : null;
+
+  const criticalParams = 
+    criticalPanel === "circulation" ? circulationCritical :
+    criticalPanel === "oxygenation" ? oxygenationCritical :
+    criticalPanel === "ventStatus" ? (data.disconnection ? ["disconnection"] : data.leakStatus !== "None" ? ["leakStatus"] : ["pip", "peep", "pplat"].filter(k => statuses[k] === "critical")) :
+    [];
+
+  const handleResolve = () => {
+    setResolvedPanel(criticalPanel);
+    setTimeout(() => setResolvedPanel(null), 500);
+  };
+
+  // Reset resolved state when new critical emerges
+  useEffect(() => {
+    if (!hasCritical) {
+      setResolvedPanel(null);
+    }
+  }, [hasCritical]);
 
   return (
     <div className={`min-h-screen bg-slate-950 text-white transition-colors duration-700 ${
@@ -67,25 +98,56 @@ export default function RespiratoryCockpit() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.25 }}
             className={`grid gap-4 ${
-              novice
-                ? "grid-cols-1 lg:grid-cols-[1fr_2fr_1fr]"
-                : "grid-cols-1 lg:grid-cols-[280px_1fr_280px]"
+              criticalPanel === "circulation" ? "grid-cols-1 lg:grid-cols-[3fr_1fr_1fr]" :
+              criticalPanel === "oxygenation" ? "grid-cols-1 lg:grid-cols-[1fr_3fr_1fr]" :
+              criticalPanel === "ventStatus" ? "grid-cols-1 lg:grid-cols-[1fr_1fr_3fr]" :
+              novice ? "grid-cols-1 lg:grid-cols-[1fr_2fr_1fr]" : "grid-cols-1 lg:grid-cols-[280px_1fr_280px]"
             }`}
           >
             {/* LEFT — Circulation */}
-            <section className="order-2 lg:order-1">
+            <motion.section 
+              layout
+              className={`order-2 lg:order-1 ${criticalPanel && criticalPanel !== "circulation" ? "opacity-40" : ""}`}
+            >
+              {criticalPanel === "circulation" && (
+                <ActionMenu 
+                  panel="circulation" 
+                  criticalParams={criticalParams}
+                  onResolve={handleResolve}
+                />
+              )}
               <CirculationPanel data={data} statuses={statuses} novice={novice} />
-            </section>
+            </motion.section>
 
             {/* CENTER — Oxygenation & Ventilation */}
-            <section className="order-1 lg:order-2">
+            <motion.section 
+              layout
+              className={`order-1 lg:order-2 ${criticalPanel && criticalPanel !== "oxygenation" ? "opacity-40" : ""}`}
+            >
+              {criticalPanel === "oxygenation" && (
+                <ActionMenu 
+                  panel="oxygenation" 
+                  criticalParams={criticalParams}
+                  onResolve={handleResolve}
+                />
+              )}
               <OxygenationPanel data={data} statuses={statuses} waveform={waveform} novice={novice} />
-            </section>
+            </motion.section>
 
             {/* RIGHT — Vent Status & Safety */}
-            <section className="order-3">
+            <motion.section 
+              layout
+              className={`order-3 ${criticalPanel && criticalPanel !== "ventStatus" ? "opacity-40" : ""}`}
+            >
+              {criticalPanel === "ventStatus" && (
+                <ActionMenu 
+                  panel="ventStatus" 
+                  criticalParams={criticalParams}
+                  onResolve={handleResolve}
+                />
+              )}
               <VentStatusPanel data={data} statuses={statuses} novice={novice} />
-            </section>
+            </motion.section>
           </motion.div>
         </AnimatePresence>
       </main>
