@@ -47,8 +47,14 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import RespiratoryCockpit from './pages/RespiratoryCockpit';
 
-export const pagesConfig = {
-	Pages: {}
+
+export const PAGES = {
+    "RespiratoryCockpit": RespiratoryCockpit,
 }
 
+export const pagesConfig = {
+    mainPage: "RespiratoryCockpit",
+    Pages: PAGES,
+};
