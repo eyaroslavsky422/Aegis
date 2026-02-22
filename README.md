@@ -121,79 +121,161 @@ Interactive Map Visualization and Incident Monitoring
 
 ### Visualization
 
-* Interactive map visualization (AmbulanceMap.jsx)
-* Real-time telemetry monitoring panels
+Support: [https://app.base44.com/support](https://app.base44.com/support)
 
-### Architecture
 
-* Component-based cockpit system
-* Real-time simulation engine using React hooks
-* Modular telemetry panels for circulation, oxygenation, and ventilation
+# Aegis: Adaptive Emergency Triage and Dispatch Interface
 
-### Backend Integration (Extensible)
+Aegis is a cognitive decision-support interface that analyzes emergency call transcripts in real time, extracts critical biomarkers, and recommends optimal responder deployment while providing pre-arrival preparation guidance to first responders.
 
-* OpenAI API integration for transcript analysis (planned / extensible)
-* Dispatch and responder assignment logic (planned / extensible)
+The system reduces cognitive load, accelerates dispatch decisions, and improves responder readiness through adaptive human-computer interaction.
+
+---
+
+## Overview
+
+Emergency response is a time-critical process where seconds can determine outcomes. Dispatchers and responders must rapidly interpret incomplete, chaotic information and make high-stakes decisions under preshoiwsure.
+
+Aegis augments emergency response workflows by transforming raw emergency call transcripts into structured, actionable intelligence, enabling responders to prepare effectively and ensuring optimal unit deployment based on severity, proximity, and required skill level.
+
+Instead of static dispatch interfaces, Aegis dynamically adapts information presentation based on incident urgency, prioritizing critical signals and reducing cognitive overhead.
+
+---
+
+## Key Features
+
+### Real-Time Transcript Intelligence Extraction
+
+Aegis processes emergency call transcripts and extracts structured incident intelligence, including:
+
+* Emergency type classification
+* Severity assessment
+* Biomarker and symptom detection
+* Confidence scoring and rationale
+
+This enables rapid situational awareness without requiring manual interpretation.
+
+---
+
+### Pre-Arrival Preparation Guidance
+
+Aegis proactively prepares responders before they arrive on scene by recommending:
+
+* Required medical equipment
+* Suggested intervention protocols
+* Scene risk considerations
+
+This reduces preparation time and improves response effectiveness.
+
+Example output:
+
+```
+Emergency: Cardiac Arrest  
+Severity: CRITICAL  
+
+Prepare immediately:
+• Defibrillator
+• Oxygen kit
+• Airway equipment
+
+Suggested protocol:
+• Assess airway, breathing, circulation
+• Begin CPR if indicated
+```
+
+---
+
+### Intelligent Responder Deployment Optimization
+
+Aegis evaluates available responder units based on:
+
+* Distance from incident
+* Skill level and certification (EMT, paramedic, advanced life support)
+* Incident severity and required capabilities
+
+The system recommends optimal responder deployment to maximize survival probability and response efficiency.
+
+---
+
+### Adaptive Command Interface (Human-Computer Interaction Innovation)
+
+Aegis dynamically adjusts interface complexity based on incident severity and responder needs.
+
+Critical incidents surface prioritized preparation guidance and deployment recommendations, while lower-priority incidents present simplified views.
+
+This adaptive interface reduces cognitive load and improves decision clarity during high-stress scenarios.
+
+---
+
+### Interactive Map Visualization
+
+Aegis provides a real-time visual map displaying:
+
+* Incident location
+* Nearby responder units
+* Recommended deployment selections
+
+This improves situational awareness and dispatch transparency.
+
+---
+
+## System Architecture
+
+```
+Emergency Call Transcript
+          ↓
+AI Triage Engine (Biomarker Extraction + Severity Assessment)
+          ↓
+Deployment Optimization Engine
+          ↓
+Adaptive Command Interface
+          ↓
+Responder Preparation Guidance + Deployment Recommendations
+```
+
+---
+
+## Tech Stack
+
+### Frontend
+
+* Next.js (App Router)
+* TypeScript
+* Tailwind CSS
+* Mapbox GL JS (or Google Maps API)
+
+### Backend
+
+* Next.js API Routes
+* OpenAI GPT for structured triage intelligence extraction
 
 ### Data
 
 * Simulated responder location dataset
-* Simulated incident telemetry streams
-* Simulated patient vitals monitoring
+* Real-time incident intelligence generation
 
 ---
 
 ## Repository Structure
 
 ```
-Aegis/
-├── src/
-│   ├── api/
-│   │   └── base44Client.js
-│   │
-│   ├── components/
-│   │   ├── cockpit/
-│   │   │   ├── ActionMenu.jsx
-│   │   │   ├── CirculationPanel.jsx
-│   │   │   ├── ModeToggle.jsx
-│   │   │   ├── OxygenationPanel.jsx
-│   │   │   ├── VentStatusPanel.jsx
-│   │   │   ├── VitalTile.jsx
-│   │   │   ├── WaveformChart.jsx
-│   │   │   └── useSimulatedData.jsx
-│   │   │
-│   │   ├── map/
-│   │   │   ├── AmbulanceMap.jsx
-│   │   │   └── patientData.jsx
-│   │   │
-│   │   └── ui/
-│   │       └── UserNotRegisteredError.jsx
-│   │
-│   ├── hooks/
-│   │   └── use-mobile.jsx
-│   │
-│   ├── lib/
-│   │   ├── AuthContext.jsx
-│   │   ├── NavigationTracker.jsx
-│   │   └── PageNotFound.jsx
-│   │
-│   ├── utils/
-│   │   └── index.ts
-│   │
-│   ├── App.jsx
-│   ├── main.jsx
-│   ├── index.css
-│   └── pages.config.js
+aegis/
+├── app/
+│   ├── page.tsx                # Main dashboard interface
+│   └── api/
+│       ├── triage/route.ts    # Transcript analysis endpoint
+│       └── deploy/route.ts    # Deployment recommendation endpoint
 │
-├── index.html
-├── package.json
-├── package-lock.json
-├── tailwind.config.js
-├── postcss.config.js
-├── vite.config.js
-├── eslint.config.js
-├── jsconfig.json
-├── components.json
+├── components/
+│   ├── Dashboard/             # Command interface panels
+│   └── Map/                   # Map visualization components
+│
+├── lib/
+│   ├── triage/                # Transcript analysis logic
+│   ├── deploy/                # Unit selection and scoring logic
+│   └── data/                  # Simulated responder datasets
+│
+├── types/                     # TypeScript data models
 └── README.md
 ```
 
@@ -205,6 +287,7 @@ Aegis/
 
 * Node.js 18+
 * npm or yarn
+* Claude API key (Anthropic)
 
 ---
 
@@ -223,16 +306,30 @@ Install dependencies:
 npm install
 ```
 
+Create environment file:
+
+```
+.env.local
+```
+
+Add:
+
+```
+ANTHROPIC_API_KEY=your_api_key_here
+MAPBOX_ACCESS_TOKEN=your_mapbox_secret_token_here
+VITE_MAPBOX_ACCESS_TOKEN=your_mapbox_public_token_here
+```
+
 Run development server:
 
 ```
 npm run dev
 ```
 
-Open in browser:
+Open:
 
 ```
-http://localhost:5173
+http://localhost:3000
 ```
 
 ---
@@ -281,29 +378,43 @@ The `Medical Assistant` control appears in the app and starts/stops live WebRTC 
 
 ## Example Workflow
 
-1. Incoming incident appears in cockpit interface
-2. Patient vitals stream in real time
-3. Cockpit interface highlights critical metrics dynamically
-4. Map displays incident location and responder positions
-5. System recommends preparation guidance and responder deployment
+1. Input emergency call transcript:
+
+```
+"My father collapsed and isn't breathing."
+```
+
+2. Aegis extracts incident intelligence:
+
+* Cardiac arrest detected
+* Severity: CRITICAL
+* Biomarkers: unconscious, not breathing
+
+3. Aegis recommends:
+
+* Prepare defibrillator and airway equipment
+* Dispatch paramedic-level EMS unit
+* Shows recommended unit on map
+
+4. Responders arrive better prepared and informed.
 
 ---
 
 ## Motivation
 
-Emergency response systems today rely heavily on manual interpretation and static dashboards, which introduce delays, cognitive overload, and inconsistent decision-making.
+Emergency dispatch systems today rely heavily on manual interpretation and static interfaces. This introduces delays, cognitive overload, and inconsistent decision-making.
 
-Aegis demonstrates a new paradigm in adaptive human-computer interaction: real-time, intelligent command interfaces that dynamically prioritize critical information and assist responders in life-saving decision-making.
+Aegis demonstrates a new paradigm in human-computer interaction: adaptive, intelligent interfaces that dynamically prioritize information and support decision-making in high-stakes environments.
 
-This approach has the potential to significantly improve emergency response efficiency, responder preparedness, and patient survival outcomes.
+This approach has the potential to improve emergency response efficiency, responder preparedness, and ultimately, patient outcomes.
 
 ---
 
 ## Inspiration
 
-Inspired by emergency command center interfaces, modern cockpit telemetry systems, and emerging AI-assisted triage technologies.
+Inspired by early dispatch automation research and prototypes such as TriageAI, which explored automated triage extraction and dispatch assistance.
 
-Aegis explores how adaptive interfaces and real-time intelligence extraction can improve emergency response workflows.
+Aegis extends this concept into a real-time adaptive command interface focused on responder preparation, deployment optimization, and cognitive workload reduction.
 
 ---
 
@@ -319,23 +430,17 @@ All outputs should be treated as decision-support suggestions requiring human ve
 
 ## Future Work
 
-* Real-time transcript ingestion and analysis via OpenAI API and Wispr Flow
-* Live responder GPS tracking integration
-* Automated responder assignment engine
-* Hospital routing and availability optimization
-* Multi-incident command coordination
+* Real-time speech-to-text integration
+* Live responder tracking integration
+* Hospital availability and routing optimization
+* Multi-incident resource allocation
 * Mobile responder interface
 
 ---
 
 ## Authors
 
-Built by:
-
-* Steven Ngo
-* Howard Lin
-* Elliott Yaroslavsky
-* Aarav Trivedi
+Built by: Steven Ngo, Howard Lin, Elliott Yaroslavsky, Aarav Trivedi
 
 ---
 

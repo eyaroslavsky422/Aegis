@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { PATIENTS, AWAITING_PICKUP } from "../components/map/patientData";
-import AmbulanceMap from "../components/map/AmbulanceMap";
+import AmbulanceMap from "../components/map/AmbulanceMapNew";
 import { Ambulance, MapPin, Clock, User, AlertCircle, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
