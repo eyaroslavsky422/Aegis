@@ -1,3 +1,5 @@
+VIDEO TRANSCRIPT
+
 Imagine you’re an EMT transporting a patient with an acute medical emergency. You’re juggling navigation, vitals, and machine displays all at once, and one missed alert could be fatal. This is a reality that EMTs experience every day, but it doesn’t have to be this way.
 
 We build Aegis, a first-of-its-kind unified dashboard for ambulance crews. It consolidates all critical data into one intelligent and adaptive dashboard: Oxygen levels,  settings, vital signs, situation-specific markers, and real-time navigation to the nearest hospital. We currently have sepsis-specific and respiratory-specific dashboards, combined with a speech-recognition system that automatically creates patient files based on their recorded 911 calls.
