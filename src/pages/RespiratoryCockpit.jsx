@@ -6,9 +6,10 @@ import OxygenationPanel from "../components/cockpit/OxygenationPanel";
 import VentStatusPanel from "../components/cockpit/VentStatusPanel";
 import ModeToggle from "../components/cockpit/ModeToggle";
 import ActionMenu from "../components/cockpit/ActionMenu";
-// import AmbulanceMap from "../components/map/AmbulanceMap";
 import { PATIENTS } from "../components/map/patientData";
-import { Siren, Clock } from "lucide-react";
+import { Siren, Clock, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 
 function LiveClock() {
   const [time, setTime] = useState(new Date());
@@ -59,12 +60,7 @@ export default function RespiratoryCockpit() {
     setTimeout(() => setResolvedPanel(null), 500);
   };
 
-  // Reset resolved state when new critical emerges
-  useEffect(() => {
-    if (!hasCritical) {
-      setResolvedPanel(null);
-    }
-  }, [hasCritical]);
+
 
   return (
     <div className={`min-h-screen bg-slate-950 text-white transition-colors duration-700 ${
@@ -74,6 +70,12 @@ export default function RespiratoryCockpit() {
       <header className="sticky top-0 z-30 backdrop-blur-xl bg-slate-950/80 border-b border-slate-800/60">
         <div className="max-w-screen-2xl mx-auto px-4 py-2.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
+            <Link 
+              to={createPageUrl("FleetOverview")} 
+              className="text-slate-400 hover:text-slate-200 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
             <div className="flex items-center gap-2">
               <Siren className="w-5 h-5 text-red-400" />
               <h1 className="text-sm font-bold tracking-wide">
@@ -121,7 +123,7 @@ export default function RespiratoryCockpit() {
             {/* LEFT — Circulation */}
             <motion.section 
               layout
-              className={`order-2 lg:order-1 ${criticalPanel && criticalPanel !== "circulation" ? "opacity-40" : ""}`}
+              className="order-2 lg:order-1"
             >
               {showAlertPopups && criticalPanel === "circulation" && (
                 <ActionMenu 
@@ -136,7 +138,7 @@ export default function RespiratoryCockpit() {
             {/* CENTER — Oxygenation & Ventilation */}
             <motion.section 
               layout
-              className={`order-1 lg:order-2 ${criticalPanel && criticalPanel !== "oxygenation" ? "opacity-40" : ""}`}
+              className="order-1 lg:order-2"
             >
               {showAlertPopups && criticalPanel === "oxygenation" && (
                 <ActionMenu 
@@ -151,7 +153,7 @@ export default function RespiratoryCockpit() {
             {/* RIGHT — Vent Status & Safety */}
             <motion.section 
               layout
-              className={`order-3 ${criticalPanel && criticalPanel !== "ventStatus" ? "opacity-40" : ""}`}
+              className="order-3"
             >
               {showAlertPopups && criticalPanel === "ventStatus" && (
                 <ActionMenu 
@@ -166,29 +168,7 @@ export default function RespiratoryCockpit() {
         </AnimatePresence>
       </main>
 
-      {/*
-      Map Section
-      <section className="max-w-screen-2xl mx-auto px-4 pb-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-emerald-400" />
-            <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-400">
-              Location & Transport
-            </h2>
-          </div>
-          <div className="text-xs text-slate-400">
-            <span className="font-semibold text-emerald-400">{patient.eta} min</span> to hospital
-          </div>
-        </div>
-        <AmbulanceMap
-          ambulancePos={patient.ambulancePos}
-          hospitalPos={patient.hospitalPos}
-          patientId={patient.id}
-          eta={patient.eta}
-          compact={true}
-        />
-      </section>
-      */}
+
 
       {/* Bottom safety bar */}
       {hasCritical && (

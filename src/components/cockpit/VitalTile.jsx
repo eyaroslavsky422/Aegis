@@ -21,10 +21,17 @@ const statusStyles = {
     glow: "shadow-[0_0_30px_rgba(239,68,68,0.25)]",
     scale: 1.05,
   },
+  primary: {
+    bg: "bg-purple-950/70 border-purple-500/70",
+    text: "text-purple-300",
+    glow: "shadow-[0_0_40px_rgba(168,85,247,0.4)]",
+    scale: 1.06,
+  },
 };
 
 export default function VitalTile({ label, value, unit, status = "normal", large, novice, sublabel, children }) {
   const s = statusStyles[status] || statusStyles.normal;
+  const isPrimary = status === "primary";
 
   return (
     <motion.div
@@ -32,11 +39,23 @@ export default function VitalTile({ label, value, unit, status = "normal", large
       animate={{ scale: s.scale }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
       className={cn(
-        "rounded-2xl border backdrop-blur-sm p-3 flex flex-col justify-between transition-colors duration-500",
+        "rounded-2xl border backdrop-blur-sm p-3 flex flex-col justify-between transition-colors duration-500 relative",
         s.bg, s.glow,
         large ? "min-h-[120px]" : "min-h-[90px]"
       )}
     >
+      {isPrimary && (
+        <>
+          <motion.div 
+            className="absolute inset-0 rounded-2xl border-2 border-purple-500/80 pointer-events-none"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+          <div className="absolute -top-2 -right-2 bg-purple-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-lg z-10">
+            #1 Priority
+          </div>
+        </>
+      )}
       <div className="flex items-start justify-between gap-1">
         <span className="text-[11px] font-medium uppercase tracking-wider text-slate-400 leading-tight">
           {label}
@@ -68,7 +87,7 @@ export default function VitalTile({ label, value, unit, status = "normal", large
         </div>
       )}
 
-      {status === "critical" && (
+      {status === "critical" && !isPrimary && (
         <motion.div
           animate={{ opacity: [0.4, 1, 0.4] }}
           transition={{ duration: 1.2, repeat: Infinity }}
