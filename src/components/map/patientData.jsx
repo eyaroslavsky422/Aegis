@@ -41,3 +41,16 @@ export const PATIENTS = [
     criticalParams: [],
   },
 ];
+
+export const AWAITING_PICKUP = [
+  {
+    id: "PEND-301",
+    name: "David Thompson",
+    age: 58,
+    condition: "Sepsis",
+    location: [37.7699, -122.4469], // Patient location
+    hospitalPos: [37.7886, -122.4098],
+    estimatedArrival: 5, // minutes until ambulance arrives
+    criticalParams: ["lactate", "temp"],
+  },
+];

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { PATIENTS } from "../components/map/patientData";
+import { PATIENTS, AWAITING_PICKUP } from "../components/map/patientData";
 import AmbulanceMap from "../components/map/AmbulanceMap";
 import { Ambulance, MapPin, Clock, User, AlertCircle, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
@@ -33,11 +33,74 @@ export default function FleetOverview() {
 
       <main className="max-w-screen-2xl mx-auto p-4">
         <div className="grid lg:grid-cols-2 gap-6">
-          {/* Patient List */}
-          <div className="space-y-4">
-            <h2 className="text-sm font-semibold uppercase tracking-widest text-slate-400 mb-3">
-              Active Patients <span className="text-xs font-normal text-slate-500">(Sorted by Severity)</span>
-            </h2>
+          {/* Patient Lists */}
+          <div className="space-y-6">
+            {/* Awaiting Pickup */}
+            <div className="space-y-4">
+              <h2 className="text-sm font-semibold uppercase tracking-widest text-slate-400 mb-3">
+                Awaiting Pickup <span className="text-xs font-normal text-slate-500">({AWAITING_PICKUP.length})</span>
+              </h2>
+              {AWAITING_PICKUP.map((patient, idx) => (
+                <motion.div
+                  key={patient.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                >
+                  <div className={cn(
+                    "rounded-2xl border backdrop-blur-sm p-4 transition-all",
+                    patient.criticalParams.length > 0
+                      ? "bg-amber-950/40 border-amber-500/60 shadow-[0_0_20px_rgba(245,158,11,0.15)]"
+                      : "bg-slate-800/60 border-slate-700/50"
+                  )}>
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center">
+                          <User className="w-5 h-5 text-slate-300" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-white">{patient.name}</p>
+                          <p className="text-xs text-slate-400">{patient.id}</p>
+                        </div>
+                      </div>
+                      <div className="px-2.5 py-1 rounded-full bg-amber-500/20 border border-amber-500/40">
+                        <span className="text-[10px] font-semibold text-amber-300 uppercase">Dispatching</span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 mb-3 text-xs">
+                      <div>
+                        <p className="text-slate-500">Age</p>
+                        <p className="text-slate-200 font-medium">{patient.age} years</p>
+                      </div>
+                      <div>
+                        <p className="text-slate-500">Condition</p>
+                        <p className="text-slate-200 font-medium">{patient.condition}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-700/40">
+                      <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                        <Clock className="w-3.5 h-3.5" />
+                        <span>Unit arriving in: {patient.estimatedArrival} min</span>
+                      </div>
+                      {patient.criticalParams.length > 0 && (
+                        <div className="flex items-center gap-1.5 text-xs text-amber-400">
+                          <AlertCircle className="w-3.5 h-3.5" />
+                          <span>{patient.criticalParams.length} Critical</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Active Transports */}
+            <div className="space-y-4">
+              <h2 className="text-sm font-semibold uppercase tracking-widest text-slate-400 mb-3">
+                Active Transports <span className="text-xs font-normal text-slate-500">(Sorted by Severity)</span>
+              </h2>
             {sortedPatients.map((patient, idx) => (
               <motion.div
                 key={patient.id}
