@@ -82,6 +82,34 @@ export default function useSimulatedData() {
     return () => clearInterval(interval);
   }, []);
 
+  // Periodic critical events every 5-10 seconds
+  useEffect(() => {
+    const triggerCriticalEvent = () => {
+      const events = [
+        () => setData(prev => ({ ...prev, spo2: 88 + Math.random() * 3 })),
+        () => setData(prev => ({ ...prev, rr: 32 + Math.random() * 5 })),
+        () => setData(prev => ({ ...prev, etco2: 20 + Math.random() * 3 })),
+        () => setData(prev => ({ ...prev, pip: 35 + Math.random() * 5 })),
+        () => setData(prev => ({ ...prev, disconnection: true })),
+        () => setData(prev => ({ ...prev, leakStatus: "High Leak" })),
+      ];
+      
+      const randomEvent = events[Math.floor(Math.random() * events.length)];
+      randomEvent();
+    };
+
+    const scheduleNext = () => {
+      const delay = 5000 + Math.random() * 5000;
+      return setTimeout(() => {
+        triggerCriticalEvent();
+        scheduleNext();
+      }, delay);
+    };
+
+    const timeout = scheduleNext();
+    return () => clearTimeout(timeout);
+  }, []);
+
   // Capnography waveform simulation
   useEffect(() => {
     const waveInterval = setInterval(() => {

@@ -6,6 +6,7 @@ import OxygenationPanel from "../components/cockpit/OxygenationPanel";
 import VentStatusPanel from "../components/cockpit/VentStatusPanel";
 import ModeToggle from "../components/cockpit/ModeToggle";
 import ActionMenu from "../components/cockpit/ActionMenu";
+import AmbulanceMap from "../components/map/AmbulanceMapNew";
 import { PATIENTS } from "../components/map/patientData";
 import { Siren, Clock, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -28,7 +29,7 @@ export default function RespiratoryCockpit() {
   const { data, statuses, waveform, resetToNormal } = useSimulatedData();
   const [novice, setNovice] = useState(true);
   const [resolvedPanel, setResolvedPanel] = useState(null);
-  const showAlertPopups = false;
+  const showAlertPopups = true;
   
   // Get patient ID from URL
   const urlParams = new URLSearchParams(window.location.search);
