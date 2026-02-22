@@ -28,7 +28,7 @@ export default function RespiratoryCockpit() {
   const { data, statuses, waveform, resetToNormal } = useSimulatedData();
   const [novice, setNovice] = useState(true);
   const [resolvedPanel, setResolvedPanel] = useState(null);
-  const showAlertPopups = false;
+  const showAlertPopups = true;
   
   // Get patient ID from URL
   const urlParams = new URLSearchParams(window.location.search);
