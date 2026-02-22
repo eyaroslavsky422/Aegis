@@ -38,11 +38,22 @@ export default function useSepsisData() {
         etco2: jitter(prev.etco2, 1),
         lactate: jitter(prev.lactate, 0.2),
         shockIndex: jitter(prev.shockIndex, 0.05),
-        timeSinceAlert: prev.timeSinceAlert + 1,
       }));
     }, 2000);
 
     return () => clearInterval(interval);
+  }, []);
+
+  // Update time since alert only once per minute
+  useEffect(() => {
+    const minuteInterval = setInterval(() => {
+      setData(prev => ({
+        ...prev,
+        timeSinceAlert: prev.timeSinceAlert + 1,
+      }));
+    }, 60000);
+
+    return () => clearInterval(minuteInterval);
   }, []);
 
   useEffect(() => {
