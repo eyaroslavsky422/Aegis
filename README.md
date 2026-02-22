@@ -237,6 +237,48 @@ http://localhost:5173
 
 ---
 
+## ElevenLabs Medical Assistant Agent
+
+This project includes a deployed ElevenLabs Conversational AI agent integration.
+
+- Agent name: `Medical Assistant`
+- Agent ID: `agent_2601kj1apm99fbm983n8krtj6zp8`
+- Frontend component: `src/components/MedicalAssistantAgent.jsx`
+- Backend token endpoint: `GET /api/elevenlabs/token`
+
+### Required environment variables
+
+For the backend (`server.js`):
+
+```bash
+ELEVENLABS_API_KEY=your_server_side_api_key
+ELEVENLABS_AGENT_ID=agent_2601kj1apm99fbm983n8krtj6zp8
+```
+
+For the frontend (optional, defaults to `http://localhost:3000`):
+
+```bash
+VITE_API_BASE_URL=http://localhost:3000
+```
+
+### Run with agent enabled
+
+In one terminal:
+
+```bash
+node server.js
+```
+
+In another terminal:
+
+```bash
+npm run dev
+```
+
+The `Medical Assistant` control appears in the app and starts/stops live WebRTC conversation sessions using server-minted conversation tokens.
+
+---
+
 ## Example Workflow
 
 1. Incoming incident appears in cockpit interface

@@ -105,9 +105,11 @@ export default function FleetOverview() {
             <div className="rounded-2xl border border-slate-700/50 bg-slate-800/60 p-3 overflow-hidden">
               <div className="h-[600px]">
                 <AmbulanceMap
+                  ambulancePos={hospitalPos}
                   allPatients={PATIENTS}
                   hospitalPos={hospitalPos}
                   patientId="All Units"
+                  eta={0}
                   compact={false}
                   expandable={false}
                 />

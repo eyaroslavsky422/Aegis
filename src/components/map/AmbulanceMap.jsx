@@ -7,7 +7,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
 // Fix default marker icons
-delete L.Icon.Default.prototype._getIconUrl;
+// delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",
   iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
@@ -180,14 +180,13 @@ export default function AmbulanceMap({ ambulancePos, hospitalPos, patientId, eta
                 <p className="text-sm font-semibold text-white">Patient: {patientId}</p>
                 <p className="text-xs text-slate-300">ETA: {eta} min to hospital</p>
               </div>
-              <Button
+              <button
                 onClick={() => setExpanded(false)}
-                size="sm"
-                className="absolute top-4 right-4 z-[1000] bg-slate-900/90 hover:bg-slate-800 text-white gap-1.5 backdrop-blur-sm"
+                className="absolute top-4 right-4 z-[1000] bg-slate-900/90 hover:bg-slate-800 text-white gap-1.5 backdrop-blur-sm px-3 py-2 rounded-md text-sm font-medium flex items-center"
               >
-                <Minimize2 className="w-3.5 h-3.5" />
+                <Minimize2 className="w-3.5 h-3.5 mr-1.5" />
                 Close
-              </Button>
+              </button>
               <MapContent isExpanded={true} />
             </motion.div>
           </motion.div>

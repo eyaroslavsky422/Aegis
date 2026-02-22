@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp, Gauge, AlertTriangle, Unplug } from "lucide-react";
 import VitalTile from "./VitalTile";
+import SearchBox from "@/components/SearchBox";
 import { cn } from "@/lib/utils";
 
 export default function VentStatusPanel({ data, statuses, novice }) {
   const [expanded, setExpanded] = useState(true);
+  const [searchValue, setSearchValue] = useState("");
   const hasAlert = data.disconnection || data.leakStatus !== "None";
 
   return (
@@ -117,6 +119,12 @@ export default function VentStatusPanel({ data, statuses, novice }) {
                 <span className="text-[11px] text-emerald-400/80 font-medium">All systems normal</span>
               </div>
             )}
+
+            <SearchBox
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              placeholder="Type here..."
+            />
           </motion.div>
         )}
       </AnimatePresence>

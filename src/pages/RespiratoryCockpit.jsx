@@ -6,9 +6,9 @@ import OxygenationPanel from "../components/cockpit/OxygenationPanel";
 import VentStatusPanel from "../components/cockpit/VentStatusPanel";
 import ModeToggle from "../components/cockpit/ModeToggle";
 import ActionMenu from "../components/cockpit/ActionMenu";
-import AmbulanceMap from "../components/map/AmbulanceMap";
+// import AmbulanceMap from "../components/map/AmbulanceMap";
 import { PATIENTS } from "../components/map/patientData";
-import { Siren, Clock, MapPin } from "lucide-react";
+import { Siren, Clock } from "lucide-react";
 
 function LiveClock() {
   const [time, setTime] = useState(new Date());
@@ -27,6 +27,7 @@ export default function RespiratoryCockpit() {
   const { data, statuses, waveform, resetToNormal } = useSimulatedData();
   const [novice, setNovice] = useState(true);
   const [resolvedPanel, setResolvedPanel] = useState(null);
+  const showAlertPopups = false;
   
   // Get patient ID from URL
   const urlParams = new URLSearchParams(window.location.search);
@@ -122,7 +123,7 @@ export default function RespiratoryCockpit() {
               layout
               className={`order-2 lg:order-1 ${criticalPanel && criticalPanel !== "circulation" ? "opacity-40" : ""}`}
             >
-              {criticalPanel === "circulation" && (
+              {showAlertPopups && criticalPanel === "circulation" && (
                 <ActionMenu 
                   panel="circulation" 
                   criticalParams={criticalParams}
@@ -137,7 +138,7 @@ export default function RespiratoryCockpit() {
               layout
               className={`order-1 lg:order-2 ${criticalPanel && criticalPanel !== "oxygenation" ? "opacity-40" : ""}`}
             >
-              {criticalPanel === "oxygenation" && (
+              {showAlertPopups && criticalPanel === "oxygenation" && (
                 <ActionMenu 
                   panel="oxygenation" 
                   criticalParams={criticalParams}
@@ -152,7 +153,7 @@ export default function RespiratoryCockpit() {
               layout
               className={`order-3 ${criticalPanel && criticalPanel !== "ventStatus" ? "opacity-40" : ""}`}
             >
-              {criticalPanel === "ventStatus" && (
+              {showAlertPopups && criticalPanel === "ventStatus" && (
                 <ActionMenu 
                   panel="ventStatus" 
                   criticalParams={criticalParams}
@@ -165,7 +166,8 @@ export default function RespiratoryCockpit() {
         </AnimatePresence>
       </main>
 
-      {/* Map Section */}
+      {/*
+      Map Section
       <section className="max-w-screen-2xl mx-auto px-4 pb-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
@@ -186,6 +188,7 @@ export default function RespiratoryCockpit() {
           compact={true}
         />
       </section>
+      */}
 
       {/* Bottom safety bar */}
       {hasCritical && (
