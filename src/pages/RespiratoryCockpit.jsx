@@ -128,7 +128,7 @@ export default function RespiratoryCockpit() {
             {/* LEFT — Circulation */}
             <motion.section 
               layout
-              className={`order-2 lg:order-1 ${criticalPanel && criticalPanel !== "circulation" ? "opacity-40" : ""}`}
+              className="order-2 lg:order-1"
             >
               {criticalPanel === "circulation" && (
                 <ActionMenu 
@@ -143,7 +143,7 @@ export default function RespiratoryCockpit() {
             {/* CENTER — Oxygenation & Ventilation */}
             <motion.section 
               layout
-              className={`order-1 lg:order-2 ${criticalPanel && criticalPanel !== "oxygenation" ? "opacity-40" : ""}`}
+              className="order-1 lg:order-2"
             >
               {criticalPanel === "oxygenation" && (
                 <ActionMenu 
@@ -158,7 +158,7 @@ export default function RespiratoryCockpit() {
             {/* RIGHT — Vent Status & Safety */}
             <motion.section 
               layout
-              className={`order-3 ${criticalPanel && criticalPanel !== "ventStatus" ? "opacity-40" : ""}`}
+              className="order-3"
             >
               {criticalPanel === "ventStatus" && (
                 <ActionMenu 

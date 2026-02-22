@@ -122,7 +122,7 @@ export default function SepsisCockpit() {
             {/* LEFT — Vital Signs */}
             <motion.section 
               layout
-              className={`order-1 ${criticalPanel && criticalPanel !== "vitals" ? "opacity-40" : ""}`}
+              className="order-1"
             >
               {criticalPanel === "vitals" && primaryThreat && (
                 <SepsisActionMenu 
@@ -141,7 +141,7 @@ export default function SepsisCockpit() {
             {/* CENTER — Sepsis Metrics */}
             <motion.section 
               layout
-              className={`order-2 ${criticalPanel && criticalPanel !== "metrics" ? "opacity-40" : ""}`}
+              className="order-2"
             >
               {criticalPanel === "metrics" && primaryThreat && (
                 <SepsisActionMenu 
@@ -160,7 +160,7 @@ export default function SepsisCockpit() {
             {/* RIGHT — Resuscitation */}
             <motion.section 
               layout
-              className={`order-3 ${criticalPanel ? "opacity-40" : ""}`}
+              className="order-3"
             >
               <ResuscitationPanel data={data} />
             </motion.section>
