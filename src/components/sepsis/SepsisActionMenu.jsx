@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { X, AlertTriangle } from "lucide-react";
+import { X, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const SEPSIS_ACTIONS = {
@@ -62,7 +62,7 @@ const SEPSIS_ACTIONS = {
   ]
 };
 
-export default function SepsisActionMenu({ parameter, onClose }) {
+export default function SepsisActionMenu({ parameter, onResolve, inline = false, onClose }) {
   const actions = SEPSIS_ACTIONS[parameter] || [];
   
   const labels = {
@@ -76,6 +76,46 @@ export default function SepsisActionMenu({ parameter, onClose }) {
     shockIndex: "Shock Index",
     qsofa: "qSOFA Score"
   };
+
+  if (inline) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-2xl bg-purple-950/60 border border-purple-500/70 p-4 mb-4"
+      >
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5 text-purple-400" />
+            <h3 className="text-sm font-bold text-purple-200 uppercase tracking-wide">
+              Primary Threat — {labels[parameter]}
+            </h3>
+          </div>
+          <Button
+            onClick={onResolve}
+            size="sm"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5"
+          >
+            <CheckCircle2 className="w-4 h-4" />
+            Resolved
+          </Button>
+        </div>
+
+        {actions.length > 0 ? (
+          <ul className="space-y-2">
+            {actions.map((action, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm">
+                <span className="text-purple-400 mt-0.5">•</span>
+                <span className="text-purple-100">{action}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-purple-200">Assess patient and check all vital signs.</p>
+        )}
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div

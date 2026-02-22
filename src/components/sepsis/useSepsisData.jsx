@@ -85,5 +85,17 @@ export default function useSepsisData() {
     setStatuses(baseStatuses);
   }, [data]);
 
-  return { data, statuses, primaryThreat };
+  const resetToNormal = (params) => {
+    setData(prev => {
+      const updated = { ...prev };
+      params.forEach(param => {
+        if (param === "map") updated.map = 70;
+        if (param === "etco2") updated.etco2 = 35;
+        if (param === "lactate") updated.lactate = 1.5;
+      });
+      return updated;
+    });
+  };
+
+  return { data, statuses, primaryThreat, resetToNormal };
 }

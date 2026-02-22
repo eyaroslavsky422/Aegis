@@ -25,8 +25,8 @@ function LiveClock() {
 }
 
 export default function SepsisCockpit() {
-  const { data, statuses, primaryThreat } = useSepsisData();
-  const [selectedParameter, setSelectedParameter] = useState(null);
+  const { data, statuses, primaryThreat, resetToNormal } = useSepsisData();
+  const [resolvedPanel, setResolvedPanel] = useState(null);
   
   const urlParams = new URLSearchParams(window.location.search);
   const patientId = urlParams.get('patient') || 'AMB-2401';
@@ -34,12 +34,28 @@ export default function SepsisCockpit() {
 
   const hasCritical = Object.values(statuses).some(s => s === "critical") || primaryThreat;
 
-  // Auto-expand Primary Threat
-  useEffect(() => {
+  // Determine which panel has the primary threat
+  const vitalsParams = ["hr", "map", "rr", "spo2", "temp"];
+  const metricsParams = ["etco2", "lactate", "shockIndex", "qsofa"];
+  
+  const criticalPanel = resolvedPanel ? null :
+    vitalsParams.includes(primaryThreat) ? "vitals" :
+    metricsParams.includes(primaryThreat) ? "metrics" : null;
+
+  const handleResolve = () => {
     if (primaryThreat) {
-      setSelectedParameter(primaryThreat);
+      resetToNormal([primaryThreat]);
+      setResolvedPanel(criticalPanel);
+      setTimeout(() => setResolvedPanel(null), 500);
     }
-  }, [primaryThreat]);
+  };
+
+  // Reset resolved state when new critical emerges
+  useEffect(() => {
+    if (!hasCritical) {
+      setResolvedPanel(null);
+    }
+  }, [hasCritical]);
 
   return (
     <div className={`min-h-screen bg-slate-950 text-white transition-colors duration-700 ${
@@ -90,43 +106,67 @@ export default function SepsisCockpit() {
             <span className="font-semibold text-amber-300">Amber</span> = warning • <span className="font-semibold text-red-300">Red</span> = critical • <span className="font-semibold text-purple-300">Purple</span> = immediate intervention (auto-expanded)
           </p>
         </div>
-        <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
-          {/* LEFT — Vital Signs */}
-          <section>
-            <SepsisVitalsPanel 
-              data={data} 
-              statuses={statuses}
-              primaryThreat={primaryThreat}
-              onCriticalClick={setSelectedParameter}
-            />
-          </section>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={criticalPanel || "normal"}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25 }}
+            className={`grid gap-4 ${
+              criticalPanel === "vitals" ? "grid-cols-1 lg:grid-cols-[3fr_1fr_1fr]" :
+              criticalPanel === "metrics" ? "grid-cols-1 lg:grid-cols-[1fr_3fr_1fr]" :
+              "grid-cols-1 lg:grid-cols-3"
+            }`}
+          >
+            {/* LEFT — Vital Signs */}
+            <motion.section 
+              layout
+              className={`order-1 ${criticalPanel && criticalPanel !== "vitals" ? "opacity-40" : ""}`}
+            >
+              {criticalPanel === "vitals" && primaryThreat && (
+                <SepsisActionMenu 
+                  parameter={primaryThreat} 
+                  onResolve={handleResolve}
+                  inline={true}
+                />
+              )}
+              <SepsisVitalsPanel 
+                data={data} 
+                statuses={statuses}
+                primaryThreat={primaryThreat}
+              />
+            </motion.section>
 
-          {/* CENTER — Sepsis Metrics */}
-          <section>
-            <SepsisMetricsPanel 
-              data={data} 
-              statuses={statuses}
-              primaryThreat={primaryThreat}
-              onCriticalClick={setSelectedParameter}
-            />
-          </section>
+            {/* CENTER — Sepsis Metrics */}
+            <motion.section 
+              layout
+              className={`order-2 ${criticalPanel && criticalPanel !== "metrics" ? "opacity-40" : ""}`}
+            >
+              {criticalPanel === "metrics" && primaryThreat && (
+                <SepsisActionMenu 
+                  parameter={primaryThreat} 
+                  onResolve={handleResolve}
+                  inline={true}
+                />
+              )}
+              <SepsisMetricsPanel 
+                data={data} 
+                statuses={statuses}
+                primaryThreat={primaryThreat}
+              />
+            </motion.section>
 
-          {/* RIGHT — Resuscitation */}
-          <section>
-            <ResuscitationPanel data={data} />
-          </section>
-        </div>
+            {/* RIGHT — Resuscitation */}
+            <motion.section 
+              layout
+              className={`order-3 ${criticalPanel ? "opacity-40" : ""}`}
+            >
+              <ResuscitationPanel data={data} />
+            </motion.section>
+          </motion.div>
+        </AnimatePresence>
       </main>
-
-      {/* Action Menu Modal */}
-      <AnimatePresence>
-        {selectedParameter && (
-          <SepsisActionMenu 
-            parameter={selectedParameter} 
-            onClose={() => setSelectedParameter(null)} 
-          />
-        )}
-      </AnimatePresence>
       {/* Map Section */}
       <section className="max-w-screen-2xl mx-auto px-4 pb-4">
         <div className="flex items-center justify-between mb-3">
