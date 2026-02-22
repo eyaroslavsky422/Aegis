@@ -158,6 +158,7 @@ export default function FleetOverview() {
                 </Link>
               </motion.div>
             ))}
+            </div>
           </div>
 
           {/* Live Map */}
