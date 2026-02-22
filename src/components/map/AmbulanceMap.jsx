@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
+import React, { useState, useEffect, useRef } from "react";
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from "react-leaflet";
 import { motion, AnimatePresence } from "framer-motion";
 import { Maximize2, Minimize2, Ambulance, Hospital } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -38,9 +38,49 @@ const hospitalIcon = L.divIcon({
   iconAnchor: [14, 14],
 });
 
+// Component to animate ambulance position
+function AnimatedAmbulance({ startPos, endPos, eta, icon, patientName, patientId }) {
+  const [position, setPosition] = useState(startPos);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const totalTime = eta * 60 * 1000; // eta in minutes to milliseconds
+    const startTime = Date.now();
+    
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const newProgress = Math.min(elapsed / totalTime, 1);
+      
+      const lat = startPos[0] + (endPos[0] - startPos[0]) * newProgress;
+      const lng = startPos[1] + (endPos[1] - startPos[1]) * newProgress;
+      
+      setPosition([lat, lng]);
+      setProgress(newProgress);
+      
+      if (newProgress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+    
+    const animationFrame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [startPos, endPos, eta]);
+
+  return (
+    <Marker position={position} icon={icon}>
+      <Popup>
+        <div className="text-xs">
+          <p className="font-bold">{patientName}</p>
+          <p className="text-slate-600">{patientId}</p>
+          <p className="mt-1">ETA: {Math.ceil(eta * (1 - progress))} min</p>
+        </div>
+      </Popup>
+    </Marker>
+  );
+}
+
 export default function AmbulanceMap({ ambulancePos, hospitalPos, patientId, eta, compact = false, expandable = true, allPatients = null }) {
   const [expanded, setExpanded] = useState(false);
-  const [mapKey, setMapKey] = useState(0);
 
   // If showing all patients, calculate center from all positions
   const center = allPatients 
@@ -55,12 +95,12 @@ export default function AmbulanceMap({ ambulancePos, hospitalPos, patientId, eta
 
   const MapContent = ({ isExpanded = false }) => (
     <MapContainer
-      key={`map-${mapKey}-${isExpanded ? 'expanded' : 'compact'}`}
       center={center}
       zoom={allPatients ? 13 : 12}
       className="w-full h-full rounded-xl"
       zoomControl={!compact || isExpanded}
-      scrollWheelZoom={false}
+      scrollWheelZoom={true}
+      dragging={true}
       style={{ height: '100%', width: '100%' }}
     >
       <TileLayer
@@ -73,15 +113,14 @@ export default function AmbulanceMap({ ambulancePos, hospitalPos, patientId, eta
         <>
           {allPatients.map((patient) => (
             <React.Fragment key={patient.id}>
-              <Marker position={patient.ambulancePos} icon={ambulanceIcon}>
-                <Popup>
-                  <div className="text-xs">
-                    <p className="font-bold">{patient.name}</p>
-                    <p className="text-slate-600">{patient.id}</p>
-                    <p className="mt-1">ETA: {patient.eta} min</p>
-                  </div>
-                </Popup>
-              </Marker>
+              <AnimatedAmbulance
+                startPos={patient.ambulancePos}
+                endPos={patient.hospitalPos}
+                eta={patient.eta}
+                icon={ambulanceIcon}
+                patientName={patient.name}
+                patientId={patient.id}
+              />
               <Polyline
                 positions={[patient.ambulancePos, patient.hospitalPos]}
                 color={patient.criticalParams.length > 0 ? "#ef4444" : "#3b82f6"}
@@ -101,14 +140,14 @@ export default function AmbulanceMap({ ambulancePos, hospitalPos, patientId, eta
         </>
       ) : (
         <>
-          <Marker position={ambulancePos} icon={ambulanceIcon}>
-            <Popup>
-              <div className="text-xs">
-                <p className="font-bold">Patient: {patientId}</p>
-                <p>ETA: {eta} min</p>
-              </div>
-            </Popup>
-          </Marker>
+          <AnimatedAmbulance
+            startPos={ambulancePos}
+            endPos={hospitalPos}
+            eta={eta}
+            icon={ambulanceIcon}
+            patientName={`Patient ${patientId}`}
+            patientId={patientId}
+          />
           <Marker position={hospitalPos} icon={hospitalIcon}>
             <Popup>
               <div className="text-xs font-bold">
@@ -143,10 +182,7 @@ export default function AmbulanceMap({ ambulancePos, hospitalPos, patientId, eta
           <MapContent isExpanded={false} />
         </div>
         <Button
-          onClick={() => {
-            setExpanded(true);
-            setMapKey(prev => prev + 1);
-          }}
+          onClick={() => setExpanded(true)}
           size="sm"
           className="absolute top-2 right-2 bg-slate-900/80 hover:bg-slate-800 text-white gap-1.5 backdrop-blur-sm z-[1000]"
         >
