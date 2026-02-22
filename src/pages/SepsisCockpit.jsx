@@ -5,9 +5,8 @@ import SepsisVitalsPanel from "../components/sepsis/SepsisVitalsPanel";
 import SepsisMetricsPanel from "../components/sepsis/SepsisMetricsPanel";
 import ResuscitationPanel from "../components/sepsis/ResuscitationPanel";
 import SepsisActionMenu from "../components/sepsis/SepsisActionMenu";
-import AmbulanceMap from "../components/map/AmbulanceMap";
 import { PATIENTS } from "../components/map/patientData";
-import { Siren, Clock, MapPin, Activity, ArrowLeft } from "lucide-react";
+import { Siren, Clock, Activity, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
@@ -50,12 +49,7 @@ export default function SepsisCockpit() {
     }
   };
 
-  // Reset resolved state when new critical emerges
-  useEffect(() => {
-    if (!hasCritical) {
-      setResolvedPanel(null);
-    }
-  }, [hasCritical]);
+
 
   return (
     <div className={`min-h-screen bg-slate-950 text-white transition-colors duration-700 ${
@@ -167,27 +161,7 @@ export default function SepsisCockpit() {
           </motion.div>
         </AnimatePresence>
       </main>
-      {/* Map Section */}
-      <section className="max-w-screen-2xl mx-auto px-4 pb-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-emerald-400" />
-            <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-400">
-              Location & Transport
-            </h2>
-          </div>
-          <div className="text-xs text-slate-400">
-            <span className="font-semibold text-emerald-400">{patient.eta} min</span> to hospital
-          </div>
-        </div>
-        <AmbulanceMap
-          ambulancePos={patient.ambulancePos}
-          hospitalPos={patient.hospitalPos}
-          patientId={patient.id}
-          eta={patient.eta}
-          compact={true}
-        />
-      </section>
+
 
       {/* Bottom alert bar */}
       {hasCritical && (
