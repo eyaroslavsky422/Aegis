@@ -170,6 +170,7 @@ export default function FleetOverview() {
               <div className="h-[600px]">
                 <AmbulanceMap
                   allPatients={PATIENTS}
+                  awaitingPickup={AWAITING_PICKUP}
                   hospitalPos={hospitalPos}
                   patientId="All Units"
                   compact={false}
