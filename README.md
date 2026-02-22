@@ -4,7 +4,7 @@ Aegis is a cognitive decision-support cockpit that analyzes emergency call trans
 
 The system reduces cognitive load, accelerates dispatch decisions, and improves responder readiness through adaptive human-computer interaction and real-time situational intelligence.
 
-> Link: https://aegis-phi.vercel.app/FleetOverview
+> Link: https://aegis-phi.vercel.app/
 ---
 
 ## Overview
