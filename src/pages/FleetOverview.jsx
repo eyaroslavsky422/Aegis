@@ -171,6 +171,7 @@ export default function FleetOverview() {
                 <AmbulanceMap
                   ambulancePos={hospitalPos}
                   allPatients={PATIENTS}
+                  awaitingPickup={AWAITING_PICKUP}
                   hospitalPos={hospitalPos}
                   patientId="All Units"
                   eta={0}

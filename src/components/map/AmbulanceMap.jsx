@@ -38,6 +38,18 @@ const hospitalIcon = L.divIcon({
   iconAnchor: [14, 14],
 });
 
+const patientIcon = L.divIcon({
+  html: `<div style="background: #f59e0b; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2">
+      <circle cx="12" cy="8" r="5"/>
+      <path d="M3 21v-2a7 7 0 0 1 14 0v2"/>
+    </svg>
+  </div>`,
+  className: "",
+  iconSize: [28, 28],
+  iconAnchor: [14, 14],
+});
+
 // Component to animate ambulance position
 function AnimatedAmbulance({ startPos, endPos, eta, icon, patientName, patientId }) {
   const [position, setPosition] = useState(startPos);
@@ -79,15 +91,20 @@ function AnimatedAmbulance({ startPos, endPos, eta, icon, patientName, patientId
   );
 }
 
-export default function AmbulanceMap({ ambulancePos, hospitalPos, patientId, eta, compact = false, expandable = true, allPatients = null }) {
+export default function AmbulanceMap({ ambulancePos, hospitalPos, patientId, eta, compact = false, expandable = true, allPatients = null, awaitingPickup = null }) {
   const [expanded, setExpanded] = useState(false);
 
-  // If showing all patients, calculate center from all positions
-  const center = allPatients 
-    ? [
-        allPatients.reduce((sum, p) => sum + p.ambulancePos[0], 0) / allPatients.length,
-        allPatients.reduce((sum, p) => sum + p.ambulancePos[1], 0) / allPatients.length,
-      ]
+  // Calculate center from all positions including awaiting pickup
+  const center = allPatients || awaitingPickup
+    ? (() => {
+        const positions = [];
+        if (allPatients) positions.push(...allPatients.map(p => p.ambulancePos));
+        if (awaitingPickup) positions.push(...awaitingPickup.map(p => p.location));
+        return [
+          positions.reduce((sum, p) => sum + p[0], 0) / positions.length,
+          positions.reduce((sum, p) => sum + p[1], 0) / positions.length,
+        ];
+      })()
     : [
         (ambulancePos[0] + hospitalPos[0]) / 2,
         (ambulancePos[1] + hospitalPos[1]) / 2,
@@ -96,7 +113,7 @@ export default function AmbulanceMap({ ambulancePos, hospitalPos, patientId, eta
   const MapContent = ({ isExpanded = false }) => (
     <MapContainer
       center={center}
-      zoom={allPatients ? 13 : 12}
+      zoom={allPatients || awaitingPickup ? 13 : 12}
       className="w-full h-full rounded-xl"
       zoomControl={!compact || isExpanded}
       scrollWheelZoom={true}
@@ -107,6 +124,50 @@ export default function AmbulanceMap({ ambulancePos, hospitalPos, patientId, eta
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; OpenStreetMap'
       />
+      
+      {/* Show awaiting pickup patients */}
+      {awaitingPickup && awaitingPickup.map((patient) => {
+        // Calculate ambulance position approaching patient
+        const ambulanceDistance = patient.estimatedArrival / 60; // minutes to hours
+        const bearing = Math.atan2(
+          patient.hospitalPos[1] - patient.location[1],
+          patient.hospitalPos[0] - patient.location[0]
+        );
+        const approachingAmbulance = [
+          patient.location[0] - Math.cos(bearing) * 0.02 * ambulanceDistance,
+          patient.location[1] - Math.sin(bearing) * 0.02 * ambulanceDistance,
+        ];
+        
+        return (
+          <React.Fragment key={patient.id}>
+            <Marker position={patient.location} icon={patientIcon}>
+              <Popup>
+                <div className="text-xs">
+                  <p className="font-bold">{patient.name}</p>
+                  <p className="text-slate-600">{patient.id}</p>
+                  <p className="mt-1 text-amber-600 font-semibold">Awaiting Pickup</p>
+                  <p>Unit ETA: {patient.estimatedArrival} min</p>
+                </div>
+              </Popup>
+            </Marker>
+            <AnimatedAmbulance
+              startPos={approachingAmbulance}
+              endPos={patient.location}
+              eta={patient.estimatedArrival}
+              icon={ambulanceIcon}
+              patientName={patient.name}
+              patientId={`Responding to ${patient.id}`}
+            />
+            <Polyline
+              positions={[approachingAmbulance, patient.location]}
+              color="#f59e0b"
+              weight={2}
+              dashArray="10, 10"
+              opacity={0.6}
+            />
+          </React.Fragment>
+        );
+      })}
       
       {/* Show all patients or single patient */}
       {allPatients ? (
