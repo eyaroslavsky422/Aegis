@@ -288,7 +288,6 @@ aegis/
 
 * Node.js 18+
 * npm or yarn
-* Claude API key (Anthropic)
 
 ---
 
